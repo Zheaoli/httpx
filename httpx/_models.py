@@ -5,6 +5,7 @@ import typing
 import urllib.request
 from collections.abc import Mapping
 from http.cookiejar import Cookie, CookieJar
+from types import TracebackType
 
 from ._content import ByteStream, UnattachedStream, encode_request, encode_response
 from ._decoders import (
@@ -1008,17 +1009,16 @@ class Response:
             with request_context(request=self._request):
                 await self.stream.aclose()
 
-    def __entter__(self: U) -> U:
+    def __enter__(self: U) -> U:
         return self
 
-    def __exit__(self, *args) -> None:
+    def __exit__(
+        self,
+        exc_type: typing.Optional[typing.Type[BaseException]] = None,
+        exc_value: typing.Optional[BaseException] = None,
+        traceback: typing.Optional[TracebackType] = None,
+    ) -> None:
         self.close()
-
-    async def __aenter__(self: U) -> U:
-        await self
-
-    async def __aexit__(self, *args) -> None:
-        await self.aclose()
 
 
 class Cookies(typing.MutableMapping[str, str]):
